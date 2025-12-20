@@ -2,6 +2,35 @@
 
 A new Flutter project.
 
+WeChat - Flutter & Firebase
+🚀 Features -
+🔒 Secure Authentication (Email/Password)
+💬 Real-time Messaging
+✅ Read Receipts & Typing Indicators
+👥 One-on-One & Group Chats
+📸 Media Sharing (Images, Files)
+🌓 Dark/Light Theme
+📱 Cross-Platform (iOS & Android)
+🔄 Offline Support
+🔔 Push Notifications
+👤 User Profiles & Status
+
+
+🚀 Tech Stack -
+Frontend: Flutter
+Backend: Firebase
+
+🚀 Authentication -
+Cloud Firestore
+Firebase Storage
+Cloud Messaging
+
+✨ Highlights
+Cross-platform support (Android & iOS)
+Real-time chat powered by Cloud Firestore
+Secure authentication with Email & Password
+Online/offline message sync
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
