@@ -1,35 +1,32 @@
-# we_chat
+# just_chat
 
-A new Flutter project.
+✨ Just Chat - Flutter & Firebase
 
-WeChat - Flutter & Firebase
-🚀 Features -
-🔒 Secure Authentication (Email/Password)
-💬 Real-time Messaging
-✅ Read Receipts & Typing Indicators
-👥 One-on-One & Group Chats
-📸 Media Sharing (Images, Files)
-🌓 Dark/Light Theme
-📱 Cross-Platform (iOS & Android)
-🔄 Offline Support
-🔔 Push Notifications
-👤 User Profiles & Status
-
+🚀 Features -  
+  🔒 Secure Authentication (Email/Password)  
+  💬 Real-time Messaging  
+  ✅ Read & Seen Receipts 
+  👥 One-on-One Chats  
+  📸 Media Sharing (Images, Files)
+  📱 Cross-Platform (iOS & Android)  
+  🔄 Offline Support  
+  🔔 Push Notifications  
+  👤 User Profiles
 
 🚀 Tech Stack -
-Frontend: Flutter
-Backend: Firebase
+  Frontend: Flutter
+  Backend: Firebase
 
 🚀 Authentication -
-Cloud Firestore
-Firebase Storage
-Cloud Messaging
+  Cloud Firestore
+  Firebase Storage
+  Cloud Messaging
 
 ✨ Highlights
-Cross-platform support (Android & iOS)
-Real-time chat powered by Cloud Firestore
-Secure authentication with Email & Password
-Online/offline message sync
+  Cross-platform support (Android & iOS)
+  Real-time chat powered by Cloud Firestore
+  Secure authentication with Email & Password
+  Online/offline message sync
 
 ## Getting Started
 

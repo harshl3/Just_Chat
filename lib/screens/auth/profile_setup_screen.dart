@@ -45,7 +45,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
               // Title
               Text(
-                'Welcome to We Chat!',
+                'Welcome to Just Chat !',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

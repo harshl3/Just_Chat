@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     },
                   )
-                : Text("We Chat"),
+                : Text("Just Chat"),
 
             actions: [
               //search user button

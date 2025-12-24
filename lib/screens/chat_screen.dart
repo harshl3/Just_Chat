@@ -32,23 +32,24 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        child: WillPopScope(
-          onWillPop: () {
-            if (_showEmoji) {
-              setState(() {
-                _showEmoji = !_showEmoji;
-              });
-              return Future.value(false);
-            } else {
-              return Future.value(true);
-            }
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: _appBar(),
+      child: WillPopScope(
+        onWillPop: () {
+          if (_showEmoji) {
+            setState(() {
+              _showEmoji = !_showEmoji;
+            });
+            return Future.value(false);
+          } else {
+            return Future.value(true);
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: SafeArea(
+              child: _appBar(),
             ),
+          ),
 
             backgroundColor: Color.fromARGB(255, 234, 248, 255),
 
@@ -120,8 +121,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   //app bar widget
@@ -266,6 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       controller: _textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
+                      textCapitalization: TextCapitalization.sentences,
                       onTap: () {
                         if (_showEmoji) {
                           setState(() => _showEmoji = !_showEmoji);
@@ -300,14 +301,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
           MaterialButton(
             onPressed: () {
-              if (_textController.text.isNotEmpty) {
+              // Trim the text to remove extra spaces
+              final trimmedText = _textController.text.trim();
+              if (trimmedText.isNotEmpty) {
                 if(_list.isEmpty){
-                  APIs.sendFirstMessage(widget.user, _textController.text,Type.text);
-
-                }else{
-                APIs.sendMessage(widget.user, _textController.text,Type.text);
+                  APIs.sendFirstMessage(widget.user, trimmedText, Type.text);
+                } else {
+                  APIs.sendMessage(widget.user, trimmedText, Type.text);
                 }
-                _textController.text = '';
+                _textController.clear();
               }
             },
             padding: EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
