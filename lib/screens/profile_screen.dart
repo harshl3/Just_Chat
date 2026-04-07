@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -116,16 +117,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     borderRadius: BorderRadius.circular(
                                       mq.height * .3,
                                     ),
-                                    child: CachedNetworkImage(
-                                      height: mq.height * .2,
-                                      width: mq.height * .2,
-                                      fit: BoxFit.cover,
-                                      imageUrl: widget.user.image,
-                                      errorWidget: (context, url, error) =>
-                                          CircleAvatar(
-                                            child: Icon(CupertinoIcons.person),
-                                          ),
-                                    ),
+                                    child: widget.user.image.startsWith('http')
+                                      ? CachedNetworkImage(
+                                          height: mq.height * .2,
+                                          width: mq.height * .2,
+                                          fit: BoxFit.cover,
+                                          imageUrl: widget.user.image,
+                                          errorWidget: (context, url, error) =>
+                                              CircleAvatar(
+                                                child: Icon(CupertinoIcons.person),
+                                              ),
+                                        )
+                                      : widget.user.image.isNotEmpty ? Image.memory(
+                                          base64Decode(widget.user.image),
+                                          height: mq.height * .2,
+                                          width: mq.height * .2,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) =>
+                                              CircleAvatar(
+                                                child: Icon(CupertinoIcons.person),
+                                              ),
+                                        ) : CircleAvatar(child: Icon(CupertinoIcons.person)),
                                   ),
 
                       Positioned(
@@ -207,11 +219,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
                         // Update user info including avatar
-                        APIs.updateUserInfo().then((value) {
-                          Dialogs.showSnackBar(
-                            context,
-                            'Profile Updated Successfully !',
-                          );
+                        APIs.updateUserInfo().then((value) async {
+                          if (_image != null) {
+                            Dialogs.showProgressBar(context, 'Saving Profile Picture...');
+                            await APIs.updateProfilePicture(File(_image!));
+                            Navigator.pop(context);
+                          }
+                          if(mounted) {
+                            Dialogs.showSnackBar(
+                              context,
+                              'Profile Updated Successfully !',
+                            );
+                          }
                         });
                       }
                     },

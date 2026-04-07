@@ -68,12 +68,15 @@ class MyDateUtil {
       return 'Last seen today at $formattedTime';
     }
 
-    if ((now.difference(time).inHours / 24).round() == 1) {
+    DateTime yesterday = now.subtract(const Duration(days: 1));
+    if (time.day == yesterday.day && 
+        time.month == yesterday.month && 
+        time.year == yesterday.year) {
       return 'Last seen yesterday at $formattedTime';
     }
 
     String month = _getMonth(time);
-    return 'Last seen on ${time.day} $month on $formattedTime';
+    return 'Last seen on ${time.day} $month at $formattedTime';
   }
 
   //get month name from moth no. or index

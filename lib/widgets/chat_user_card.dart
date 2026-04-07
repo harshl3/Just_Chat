@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,13 +65,22 @@ class _ChatUserCardState extends State<ChatUserCard> {
                   : // Show profile picture if no avatar
                   ClipRRect(
                       borderRadius: BorderRadius.circular(mq.height * .3),
-                      child: CachedNetworkImage(
-                        height: mq.height * .055,
-                        width: mq.height * .055,
-                        imageUrl: widget.user.image,
-                        errorWidget: (context, url, error) =>
-                            CircleAvatar(child: Icon(CupertinoIcons.person)),
-                      ),
+                      child: widget.user.image.startsWith('http')
+                        ? CachedNetworkImage(
+                            height: mq.height * .055,
+                            width: mq.height * .055,
+                            imageUrl: widget.user.image,
+                            errorWidget: (context, url, error) =>
+                                CircleAvatar(child: Icon(CupertinoIcons.person)),
+                          )
+                        : widget.user.image.isNotEmpty ? Image.memory(
+                            base64Decode(widget.user.image),
+                            height: mq.height * .055,
+                            width: mq.height * .055,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                CircleAvatar(child: Icon(CupertinoIcons.person)),
+                          ) : CircleAvatar(child: Icon(CupertinoIcons.person)),
                     ),
               title: Text(widget.user.name),
               subtitle: Text(

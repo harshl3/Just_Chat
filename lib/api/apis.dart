@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -188,6 +190,16 @@ class APIs {
     });
   }
 
+  //for updating user profile picture with base64 encoded image
+  static Future<void> updateProfilePicture(File file) async {
+    final bytes = await file.readAsBytes();
+    final base64String = base64Encode(bytes);
+    me.image = base64String;
+    await firestore.collection('users').doc(user.uid).update({
+      'image': me.image,
+    });
+  }
+
   //for getting specific user info
   static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
     ChatUser chatUser,
@@ -235,7 +247,7 @@ class APIs {
       toId: chatUser.id,
       msg: msg,
       read: '',
-      type: Type.text,
+      type: type,
       fromId: user.uid,
       sent: time,
     );

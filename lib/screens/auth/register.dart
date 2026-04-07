@@ -126,9 +126,7 @@ class RegisterPage extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(message),
-                              backgroundColor: Colors.greenAccent.withOpacity(
-                                .6,
-                              ),
+                              backgroundColor: Colors.greenAccent.withAlpha((255 * 0.6).round()),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );

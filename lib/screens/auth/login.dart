@@ -7,6 +7,7 @@ import '../home_screen.dart';
 import 'register.dart';
 import 'profile_setup_screen.dart';
 import '../../utils/validators.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer' as dev;
 
 class LoginPage extends StatefulWidget {
@@ -31,6 +32,76 @@ class _LoginPageState extends State<LoginPage> {
   var email = TextEditingController();
 
   var pass = TextEditingController();
+
+  bool _isGoogleLoading = false;
+
+  Future<void> _handleGoogleBtnClick() async {
+    setState(() {
+      _isGoogleLoading = true;
+    });
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        clientId: "98910437031-fncqh1o6dc7e8b1efvncjs90plcdgfit.apps.googleusercontent.com",
+        scopes: ['email'],
+      );
+
+      final GoogleSignInAccount? user = await googleSignIn.signIn();
+
+      if (user == null) {
+        setState(() {
+          _isGoogleLoading = false;
+        });
+        return; // User cancelled login
+      }
+
+      final GoogleSignInAuthentication userAuth = await user.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        idToken: userAuth.idToken,
+        accessToken: userAuth.accessToken,
+      );
+
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login Successfully")),
+        );
+
+        if ((await APIs.userExists())) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+        } else {
+          await APIs.getSelfInfo();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileSetupScreen(),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      dev.log("Error during Google Sign-In: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google Sign-In failed. Please try Email instead. Error: ${e.toString()}'),
+          backgroundColor: Colors.redAccent.withAlpha((255 * 0.8).round()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isGoogleLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +237,7 @@ class _LoginPageState extends State<LoginPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error: ${e.toString()}'),
-                              backgroundColor: Colors.greenAccent.withOpacity(
-                                .6,
-                              ),
+                              backgroundColor: Colors.greenAccent.withAlpha((255 * 0.6).round()),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -197,6 +266,33 @@ class _LoginPageState extends State<LoginPage> {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  SizedBox(height: 20),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Divider(thickness: 1, color: Colors.grey),
+                      Container(
+                        color: Colors.transparent,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text("OR", style: TextStyle(color: Colors.black54)),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  _isGoogleLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : ElevatedButton.icon(
+                          onPressed: _handleGoogleBtnClick,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                          ),
+                          icon: Image.asset('images/google.png', height: mq.height * .03, errorBuilder: (context, error, stackTrace) => Icon(Icons.g_mobiledata, color: Colors.blue, size: mq.height * .03)),
+                          label: Text(
+                            'Sign in with Google',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
                 ],
               ),
             ),

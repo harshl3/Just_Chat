@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
@@ -173,13 +175,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   : // Show profile picture if no avatar
                   ClipRRect(
                       borderRadius: BorderRadius.circular(mq.height * .3),
-                      child: CachedNetworkImage(
-                        height: mq.height * .055,
-                        width: mq.height * .055,
-                        imageUrl: list.isNotEmpty ? list[0].image : widget.user.image,
-                        errorWidget: (context, url, error) =>
-                            CircleAvatar(child: Icon(CupertinoIcons.person)),
-                      ),
+                      child: (list.isNotEmpty ? list[0].image : widget.user.image).startsWith('http')
+                        ? CachedNetworkImage(
+                            height: mq.height * .055,
+                            width: mq.height * .055,
+                            imageUrl: list.isNotEmpty ? list[0].image : widget.user.image,
+                            errorWidget: (context, url, error) =>
+                                CircleAvatar(child: Icon(CupertinoIcons.person)),
+                          )
+                        : Image.memory(
+                            base64Decode(list.isNotEmpty ? list[0].image : widget.user.image),
+                            height: mq.height * .055,
+                            width: mq.height * .055,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                CircleAvatar(child: Icon(CupertinoIcons.person)),
+                          ),
                     ),
 
               SizedBox(width: 10),
@@ -206,10 +217,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                   context: context,
                                   lastActive: list[0].lastActive,
                                 )
-                        : MyDateUtil.getLastActiveTime(
-                            context: context,
-                            lastActive: widget.user.lastActive,
-                          ),
+                        : widget.user.isOnline
+                              ? 'Online'
+                              : MyDateUtil.getLastActiveTime(
+                                  context: context,
+                                  lastActive: widget.user.lastActive,
+                                ),
                     style: TextStyle(fontSize: 13, color: Colors.black54),
                   ),
                 ],
@@ -281,11 +294,47 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
 
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      // Pick an image
+                      final XFile? image = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 50, // compress to keep size small for base64
+                      );
+                      if (image != null) {
+                        log('Image Path : ${image.path}');
+                        final bytes = await File(image.path).readAsBytes();
+                        final base64String = base64Encode(bytes);
+                        
+                        if (_list.isEmpty) {
+                          APIs.sendFirstMessage(widget.user, base64String, Type.image);
+                        } else {
+                          APIs.sendMessage(widget.user, base64String, Type.image);
+                        }
+                      }
+                    },
                     icon: Icon(Icons.image, color: Colors.blueAccent, size: 26),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      // Pick an image
+                      final XFile? image = await picker.pickImage(
+                        source: ImageSource.camera,
+                        imageQuality: 50, // compress to keep size small for base64
+                      );
+                      if (image != null) {
+                        log('Image Path : ${image.path}');
+                        final bytes = await File(image.path).readAsBytes();
+                        final base64String = base64Encode(bytes);
+                        
+                        if (_list.isEmpty) {
+                          APIs.sendFirstMessage(widget.user, base64String, Type.image);
+                        } else {
+                          APIs.sendMessage(widget.user, base64String, Type.image);
+                        }
+                      }
+                    },
                     icon: Icon(
                       Icons.camera_alt_rounded,
                       color: Colors.blueAccent,
