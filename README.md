@@ -57,9 +57,9 @@ Instead of using Firebase Storage:
 1. Splash Screen → Check login
 2. Login Screen → Authenticate user
 3. Profile Setup → Complete user info
-4. Home Screen → Chat list (Stream)
+4. Home Screen → Chat list 
 5. Chat Screen → Real-time messaging
-6. Profile Screen → Update user data
+6. Profile Screen → User's profile 
 
 
 ## 👨‍💻 Developer
